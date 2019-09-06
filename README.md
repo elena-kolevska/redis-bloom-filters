@@ -20,9 +20,9 @@ Let's look at a few cases where a bloom filter would be useful.
 
 One of the most classic ones would be a simple **spellchecker**. You get the whole dictionary and add every word to the bloom filter. When you get a text you need to spellcheck, check every word against the filter. If you get a negative result back for a word, you're sure that it's misspelled and you can feel confident in highlighting it as one. 
 
-Sometimes, however, you'd have a misspelled word that the filter marked as "maybe present" and then you'd fail to mark it as misspelled. But considering that we didn't need to store the entire dictionary in memory and we control the rate of false positives, this is probably an acceptable trade off. 
+Sometimes, however, you'd have a misspelled word that the filter marked as "maybe present" and then you'd fail to mark it as misspelled. But considering we didn't need to store the entire dictionary in memory and we control the rate of false positives, this is probably an acceptable trade off. 
  
- Other common use cases are checking for blocked IP addresses, or taken usernames, filtering out already seen recommendations, network routers, bad word checkers... Generally scenarios where a negative response has more weight than a positive one.
+ Other common use cases are checking for blocked IP addresses or taken usernames, filtering out already seen recommendations, network routers, bad word checkers... Generally scenarios where a negative response has more weight than a positive one.
 
 # The inner workings
 The way Bloom Filters achieve this kind of efficiency is rather genius. Invented by Burton Bloom in the pre-email era, the same year as the VCR tape and the floppy disk (1970), it still helps with your Netflix recommendations.
@@ -80,7 +80,7 @@ Where
 
 
 # Choosing the right array size and number of functions
-There’s a lot of guessing work involved when you work with bloom filters, but at least we have a few formulas we can rely on. If you know the number of elements you have in a set or a projected maximum number to which the set can grow (`n`) and you have established a desired probability of false positives (`p`), you can use the [calculator](https://hur.st/bloomfilter) I mentioned earlier to play with the values for `k` and `m` and decide what works best in your case.
+There’s a lot of guessing work involved when you work with bloom filters, but at least we have a few formulas we can rely on. If you know the number of elements you have in a set or a projected maximum number to which it can grow (`n`) and you have established a desired probability of false positives (`p`), you can use the [calculator](https://hur.st/bloomfilter) I mentioned earlier to play with the values for `k` and `m` and decide what works best in your case.
 
 # Bloom filters in Redis
 The Redis community has been implementing their own bloom filters (`GETBIT`, `SETBIT` ftw) for many years, and for those same many years they’ve been asking for a native Redis Bloom Filter data type. Well, we still don’t have one but since version 4 Redis supports custom modules. With this big addition to Redis back in 2015 all of us got the (super)power to create our own Redis data types in high performance C! 
@@ -88,7 +88,7 @@ The Redis community has been implementing their own bloom filters (`GETBIT`, `SE
 The folks at [RedisLabs](https://redislabs.com/) decided to fulfill the wish of so many users and wrote the [RedisBloom](http://redisbloom.io) module, exposing an API simple enough for beginners and powerful enough for everyone who works with large datasets and needs some tweaking and tuning.
 Without further ado, let’s look at how would you use RedisBloom:
 
-If you’re familiar with modules, you’ll recognise the next few lines of code; they grab the RedisBloom repository from github and compile it into the `rebloom.so` file.
+If you’re familiar with modules, you’ll recognise the next few lines of code; they grab the RedisBloom repository from Github and compile it into the `rebloom.so` file.
 
 ```
 $ git clone git://github.com/RedisLabsModules/rebloom
@@ -96,18 +96,19 @@ $ cd rebloom
 $ make
 ```
 
-To load it into Redis you can either add it to your `redis.conf`) or run the following command:  
+To load it into Redis you can either add it to your `redis.conf` or run the following command:  
 
 ```$ redis-server --loadmodule /path/to/rebloom.so```
 
 Congrats! You now have a bloom filter data type in your Redis.
 
 Run the command  ```BF.ADD unique_visitors 11.22.33.44``` and the module will initialise a bloom filter for you and add the element to it. Run the same command again and it will only add the new element.  
+
 Checking for presence is as simple as `BF.EXISTS unique_visitors {element}`.  
   
-I was curious to see what is the default size of the bit array RedisBloom set up for us, so I ran `memory usage unique_visitors` and I got 255 bytes, meaning our array has `255*8=2040` bits by default (TODO: I need to confirm this, maybe part of that key stores some meta stuff).
+I was curious to see what is the default size of the bit array RedisBloom set up for us, so I ran `memory usage unique_visitors` and I got 255 bytes, meaning our array has `255*8=2040` bits by default (_TODO: I need to confirm this, maybe part of that key stores some meta stuff_).
 
-You also get the `BF.INSERT` command out of the box, which does the same thing as `BF.ADD` with the extra possibility to specify more options for the filter creation in case it hasn't been created yet.
+Out of the box you get the `BF.INSERT` command too. It does the same thing as `BF.ADD` with the extra possibility to specify more options for the filter creation in case it hasn't been created yet.
 
 You can also add and check for multiple elements in a single command with `BF.MADD` and `BF.MEXISTS`:
 
