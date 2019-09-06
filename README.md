@@ -6,11 +6,11 @@ _In an industry where “Choose the right tool for the right job” is a mantra,
 
 # What are bloom filters
 
-Checking for presence of an element in a set is a task we, as programmers, do very often and in many different scenarios. As those sets grow bigger and the scenarios more complex, often we start noticing performance decrease. If you've ever been in this position before - read on; we're going to talk about a valuable tool you can add to your toolset. 
+Checking for presence of an element in a set is a task we, as programmers, do very often and in many different scenarios. As those sets grow bigger and the scenarios more complex, often we start noticing a performance decrease. If you've ever been in this position before - read on; we're going to talk about a valuable tool you can add to your toolset. 
 
 **Bloom Filters** are a data structure that enables you to store information about the presence of an element in a set in a very small space of a fixed size.  
  
-There's a catch though. The space optimisation comes at the cost of precision; a bloom filter can guarantee the **absence** of an element from a set, but it can only give it's best bet about it's presence. This is why you’ll often see it described more precisely as a “probabilistic data structure”.
+There's a catch though. The space optimisation comes at the cost of precision; a bloom filter can guarantee the **absence** of an element from a set, but it can only give it's best bet about its presence. This is why you’ll often see it described more precisely as a “probabilistic data structure”.
 
 "Ok, so why would I need this if I can't trust it?" you might ask. Well, you actually can trust it when it says an element is not present in a set. The uncertainty comes only with the positive responses.
 
@@ -20,9 +20,9 @@ Let's look at a few cases where a bloom filter would be useful.
 
 One of the most classic ones would be a simple **spellchecker**. You get the whole dictionary and add every word to the bloom filter. When you get a text you need to spellcheck, check every word against the filter. If you get a negative result back for a word, you're sure that it's misspelled and you can feel confident in highlighting it as one. 
 
-Sometimes, however, you'd have a misspelled word that the filter marked as "maybe present" and then you'd fail to mark it as misspelled. But considering we didn't need to store the entire dictionary in memory and we control the rate of false positives, this is probably an acceptable trade off. 
+Sometimes, however, you'd have a misspelled word that the filter marked as "maybe present" and then you'd fail to mark it as misspelled. But considering we didn't need to store the entire dictionary in memory and we control the rate of false positives, this is probably an acceptable trade-off. 
  
- Other common use cases are checking for blocked IP addresses or taken usernames, filtering out already seen recommendations, network routers, bad word checkers... Generally scenarios where a negative response has more weight than a positive one.
+ Other common use cases are checking for blocked IP addresses or taken usernames, filtering out already seen recommendations, network routers, bad word checkers... generally scenarios where a negative response has more weight than a positive one.
 
 # The inner workings
 The way Bloom Filters achieve this kind of efficiency is rather genius. Invented by Burton Bloom in the pre-email era, the same year as the VCR tape and the floppy disk (1970), it still helps with your Netflix recommendations.
@@ -80,10 +80,10 @@ Where
 
 
 # Choosing the right array size and number of functions
-There’s a lot of guessing work involved when you work with bloom filters, but at least we have a few formulas we can rely on. If you know the number of elements you have in a set or a projected maximum number to which it can grow (`n`) and you have established a desired probability of false positives (`p`), you can use the [calculator](https://hur.st/bloomfilter) I mentioned earlier to play with the values for `k` and `m` and decide what works best in your case.
+There’s a lot of guessing work involved when you work with bloom filters, but at least we have a few formulas we can rely on. If you know the number of elements you have in a set or a projected maximum number to which it can grow (`n`) and you have established the desired probability of false positives (`p`), you can use the [calculator](https://hur.st/bloomfilter) I mentioned earlier to play with the values for `k` and `m` and decide what works best in your case.
 
 # Bloom filters in Redis
-The Redis community has been implementing their own bloom filters (`GETBIT`, `SETBIT` ftw) for many years, and for those same many years they’ve been asking for a native Redis Bloom Filter data type. Well, we still don’t have one but since version 4 Redis supports custom modules. With this big addition to Redis back in 2015 all of us got the (super)power to create our own Redis data types in high performance C! 
+The Redis community has been implementing their own bloom filters (`GETBIT`, `SETBIT` ftw) for many years, and for those same many years they’ve been asking for a native Redis Bloom Filter data type. Well, we still don’t have one but since version 4 Redis supports custom modules. With this big addition to Redis back in 2015 all of us got the (super)power to create our own Redis data types in high-performance C! 
 
 The folks at [RedisLabs](https://redislabs.com/) decided to fulfill the wish of so many users and wrote the [RedisBloom](http://redisbloom.io) module, exposing an API simple enough for beginners and powerful enough for everyone who works with large datasets and needs some tweaking and tuning.
 Without further ado, let’s look at how would you use RedisBloom:
@@ -117,7 +117,7 @@ BF.MADD unique_visitors 85.93.21.102 71.22.23.67 71.22.23.22
 BF.MEXISTS unique_visitors 31.76.98.208 31.76.98.209
 ``` 
 
-I encourage to visit the [RedisBloom website](https://oss.redislabs.com/redisbloom/Bloom_Commands), there are a more commands you could explore and have fun with.
+I encourage to visit the [RedisBloom website](https://oss.redislabs.com/redisbloom/Bloom_Commands), there are a few more interesting commands you could explore and have fun with.
 
 ---
 
