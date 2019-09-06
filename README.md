@@ -1,6 +1,6 @@
 Bloom Filters in Redis
 =====
-In an industry where “Choose the right tool for the right job” is a mantra, whoever has the richest toolset is king queen
+In an industry where “Choose the right tool for the right job” is a mantra, whoever has the richest toolset is ~~king~~ queen
 What are bloom filters
 
 ---
