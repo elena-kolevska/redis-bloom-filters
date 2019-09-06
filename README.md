@@ -1,9 +1,10 @@
 Bloom Filters in Redis
 =====
-In an industry where “Choose the right tool for the right job” is a mantra, whoever has the richest toolset is ~~king~~ queen
-What are bloom filters
+_In an industry where “Choose the right tool for the right job” is a mantra, whoever has the richest toolset is ~~king~~ queen_
 
 ---
+
+# What are bloom filters
 
 Checking for presence of an element in a set is a task we, as programmers, do very often and in many different scenarios. As those sets grow bigger and the scenarios more complex, often we start noticing performance decrease. If you've ever been in this position before - read on; we're going to talk about a valuable tool you can add to your toolset. 
 
@@ -34,7 +35,7 @@ Its ingeniousity, in part, comes from its simplicity; a bloom filter has only tw
 When a new element is added to a bloom filter first it passes through a hash function. The hashed value is then modulo divided by the number of bits in the array (`m`). The result of that division determines the position of the bit that should be flipped to `1`.
 
 Let’s look at an example:
-![Bloom array with a 4bit array and a single hash function](images/4bits 1hash function.png)
+![Bloom array with a 4bit array and a single hash function](images/4bits_1hash_function.png)
 
 Imagine we have a bit array of 4 bits (`m=4`) and a hash function of `f(x)= x*3`.  
 
